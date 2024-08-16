@@ -88,30 +88,26 @@ function reclaim_wpms_sso_cookie_maker($site_id){
 }
 
 //read and destroy cookie
-function reclaim_wpms_sso_cookie_eater(){
+function reclaim_wpms_sso_cookie_action(){
    $protocol = reclaim_wpms_sso_protocol();//get http or https
 
     global $post;//get current post data
     if($post && is_user_logged_in()){//make sure they are logged in and this is a post (not admin page etc.)
       $user_id = get_current_user_id();//get user ID
-         $post_slug = $post->post_name;//check current page slug ****make plugin settings page???
+      $post_slug = $post->post_name;//check current page slug ****make plugin settings page???
          if('my-sites' == $post_slug){//if my-sites slug
             if(isset($_COOKIE['reclaim_redirect_site_id'])){//if cookie set           
                $site_id = $_COOKIE['reclaim_redirect_site_id'];//get original site id from cookie
-               //var_dump($site_id);
                $site_data = get_site($site_id);//get site info using ID
-               //var_dump($site_data);
                $base_site_url = $site_data->domain . $site_data->path;//get base URL to site
-               //is_user_member_of_blog( int $user_id, int $blog_id )
-               //var_dump(current_user_can_for_blog( $site_id, 'edit_posts' ));
                if(current_user_can_for_blog( $site_id, 'edit_posts' )){//if current user is contributor or higher
-                  //var_dump('would have redirected to ' . $protocol . $base_site_url . 'wp-admin/');
-                  wp_redirect("https://". $base_site_url . 'wp-admin/');//send them to backend
                   reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id');//delete cookie
+                  wp_redirect("https://". $base_site_url . 'wp-admin/');//send them to backend
+                   exit;
                } else {//if just subscriber, send to front end site
-                  //var_dump($base_site_url);
-                  wp_redirect("https://". $base_site_url);
                   reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id');
+                  wp_redirect("https://". $base_site_url);
+                   exit;                  
                }
 
             } //if no cookie, remain on my-sites page with list of sites
@@ -122,12 +118,13 @@ function reclaim_wpms_sso_cookie_eater(){
     
 }
 
-add_action( 'wp', 'reclaim_wpms_sso_cookie_eater', 11 );
+add_action( 'wp', 'reclaim_wpms_sso_cookie_action', 11 );
 
 function reclaim_wpms_sso_delete_cookie($cookie_name){
    if (isset($_COOKIE[$cookie_name])) {
+      $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+       setcookie($cookie_name, '', time()-3600, '/', $domain); 
        unset($_COOKIE[$cookie_name]); 
-       setcookie($cookie_name, '', -1, '/'); 
        return true;
    } else {
        return false;
