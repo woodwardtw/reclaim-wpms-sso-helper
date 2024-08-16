@@ -3,7 +3,7 @@
 Plugin Name: Reclaim WPMS SSO Helper
 Plugin URI:  https://github.com/
 Description: For creating a better login experience with SSO. Use the [list-sites] shortcode.
-Version:     1.0
+Version:     1.1
 Author:      Tom Woodward
 Author URI:  https://bionicteaching.com
 License:     GPL2
