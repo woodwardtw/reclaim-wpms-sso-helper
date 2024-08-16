@@ -46,7 +46,7 @@ function reclaim_wpms_sso_page_requested(){
 function reclaim_wpms_sso_check_login(){
    $url = reclaim_wpms_sso_page_requested();//what page did you try to go to?
 
-   $root_login = network_home_url() . 'wp-login.php';//this is the basic login page and includes https:// but 
+   $root_login = network_home_url() . 'wp-login.php';//this is the basic login page and includes https://  
    //******test against custom domains?????
    $site_id = get_current_blog_id();
 
@@ -105,12 +105,12 @@ function reclaim_wpms_sso_cookie_eater(){
                //is_user_member_of_blog( int $user_id, int $blog_id )
                //var_dump(current_user_can_for_blog( $site_id, 'edit_posts' ));
                if(current_user_can_for_blog( $site_id, 'edit_posts' )){//if current user is contributor or higher
-                  var_dump('would have redirected to ' . $protocol . $base_site_url . 'wp-admin/');
-                  //wp_redirect("https://". $base_site_url . 'wp-admin/');//send them to backend
-                  var_dump(reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id'));//delete cookie
+                  //var_dump('would have redirected to ' . $protocol . $base_site_url . 'wp-admin/');
+                  wp_redirect("https://". $base_site_url . 'wp-admin/');//send them to backend
+                  reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id');//delete cookie
                } else {//if just subscriber, send to front end site
-                  var_dump($base_site_url);
-                  //wp_redirect("https://". $base_site_url);
+                  //var_dump($base_site_url);
+                  wp_redirect("https://". $base_site_url);
                   reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id');
                }
 
@@ -147,6 +147,7 @@ function reclaim_wpms_sso_list_all_the_sites_now(){
       foreach ($sites as $key => $site) {
          $title = $site->blogname;
          $url = $site->siteurl;
+         $blog_id = $site->userblog_id;//not in use now but might be relevant later
          $html .= "<li><a href='{$url}'>{$title}</a> - <a href='{$url}/wp-admin/'>dashboard</a></li>";
       }
       return "<ul id='site-list'>{$html}</ul>";
@@ -166,7 +167,7 @@ function reclaim_wpms_sso_sort_sites_alpha($blogs){
     return $blogs;
 }
 
-//LOGGER -- like frogger but more useful
+//LOGGER -- for logging var_dumps, variables, errors etc.
 
 if ( ! function_exists('write_log')) {
    function write_log ( $log )  {
