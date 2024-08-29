@@ -169,7 +169,7 @@ function reclaim_wpms_sso_sort_sites_alpha($blogs){
 /**
  * WordPress function for redirecting users on root page login based on user role
  */
-function reclaim_wpms_sso_login_redirect( $url, $request, $user ) {
+function reclaim_wpms_sso_login_redirect( $user ) {
     if ( $user && is_object( $user ) && is_a( $user, 'WP_User' ) ) {
         if ( $user->has_cap( 'administrator' ) ) {
             $url = admin_url();
@@ -180,8 +180,8 @@ function reclaim_wpms_sso_login_redirect( $url, $request, $user ) {
     return $url;
 }
 
-add_filter( 'login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 3 );
-add_action('wp_login', 'reclaim_wpms_sso_login_redirect', 10, 3);
+add_filter( 'login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 1 );
+add_action('wp_login', 'reclaim_wpms_sso_login_redirect', 10, 1);
 
 //LOGGER -- for logging var_dumps, variables, errors etc.
 
