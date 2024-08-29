@@ -171,7 +171,7 @@ function reclaim_wpms_sso_sort_sites_alpha($blogs){
  */
 function reclaim_wpms_sso_login_redirect( $url, $request, $user ) {
     if ( $user && is_object( $user ) && is_a( $user, 'WP_User' ) ) {
-        if ( $user->has_cap( 'administrator' ) ) {
+        if ( $user->has_cap( 'ninja-administrator' ) ) {
             $url = admin_url();
         } else {
             $url = home_url( '/my-sites/' );
