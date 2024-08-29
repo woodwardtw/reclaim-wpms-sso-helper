@@ -181,7 +181,7 @@ function reclaim_wpms_sso_login_redirect( $url, $request, $user ) {
 }
 
 add_filter( 'login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 3 );
-
+add_action('wp_login', 'reclaim_wpms_sso_login_redirect', 10, 2);
 
 //LOGGER -- for logging var_dumps, variables, errors etc.
 
