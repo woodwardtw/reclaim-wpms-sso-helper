@@ -95,7 +95,7 @@ function reclaim_wpms_sso_cookie_action(){
     if($post && is_user_logged_in()){//make sure they are logged in and this is a post (not admin page etc.)
       $user_id = get_current_user_id();//get user ID
       $post_slug = $post->post_name;//check current page slug ****make plugin settings page???
-         if('my-sites' == $post_slug){//if my-sites slug
+         if('my-sites' == $post_slug || is_front_page()){//if my-sites slug
             if(isset($_COOKIE['reclaim_redirect_site_id'])){//if cookie set           
                $site_id = $_COOKIE['reclaim_redirect_site_id'];//get original site id from cookie
                $site_data = get_site($site_id);//get site info using ID
@@ -150,7 +150,9 @@ function reclaim_wpms_sso_list_all_the_sites_now(){
       return "<ul id='site-list'>{$html}</ul>";
    } else {
       $login_url = wp_login_url();
-      return "<p>Please <a href='{$login_url}'>login</a> to see a list of your sites.</p>";
+      $form = wp_login_form( array( 'echo' => FALSE,'redirect' => get_permalink() ) );
+
+      return $form . "<p>Please <a href='{$login_url}'>login</a> to see a list of your sites.</p>";
    }
 }
 
@@ -169,18 +171,21 @@ function reclaim_wpms_sso_sort_sites_alpha($blogs){
 /**
  * WordPress function for redirecting users on root page login based on user role
  */
-function reclaim_wpms_sso_login_redirect( $url, $request, $user ) {
-    if ( $user && is_object( $user ) && is_a( $user, 'WP_User' ) ) {
-        if ( $user->has_cap( 'ninja-administrator' ) ) {
-            $url = admin_url();
-        } else {
+add_filter( 'login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 3 );
+
+function reclaim_wpms_sso_login_redirect( $redirect_to, $request, $user ) {
+    global $user;
+    if ( isset( $user->roles ) && is_array( $user->roles ) ) {
+
+        // if ( $user->has_cap( 'administrator' ) ) {
+        //     $url = admin_url();
+        // } else {
             $url = home_url( '/my-sites/' );
-        }
+        //}
     }
     return $url;
 }
 
-add_filter( 'login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 3 );
 
 
 //LOGGER -- for logging var_dumps, variables, errors etc.
