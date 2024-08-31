@@ -61,7 +61,10 @@ function reclaim_wpms_sso_check_login(){
             wp_redirect( $root_login); //redirect to root login page           
             exit;
          } elseif ($plain_url === $root_login && is_login()) {
-            //reclaim_wpms_sso_cookie_maker($site_id);//set cookie with the URL of the site where you tried to login
+            if (!isset($_COOKIE['reclaim_redirect_site_id'])){
+             reclaim_wpms_sso_cookie_maker($site_id);//set cookie with the URL of the main site if not already set
+            }
+           
             return;
          }
 
