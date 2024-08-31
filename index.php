@@ -61,6 +61,7 @@ function reclaim_wpms_sso_check_login(){
             wp_redirect( $root_login); //redirect to root login page           
             exit;
          } elseif ($plain_url === $root_login && is_login()) {
+            //reclaim_wpms_sso_cookie_maker($site_id);//set cookie with the URL of the site where you tried to login
             return;
          }
 
@@ -81,21 +82,20 @@ COOKIE
 
 //set cookie
 function reclaim_wpms_sso_cookie_maker($site_id){
-    //set the cookie about where you were trying to go with the site ID
+    //set the cookie to indicate where you were trying to go with the site ID
    $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-   //setcookie("reclaim_redirect_url", $plain_url, 0, '/', $domain);
    setcookie("reclaim_redirect_site_id", $site_id, 0, '/', $domain);//???set expiration for cookie to 10 mins?
 }
 
 //read and destroy cookie
 function reclaim_wpms_sso_cookie_action(){
    $protocol = reclaim_wpms_sso_protocol();//get http or https
-
     global $post;//get current post data
     if($post && is_user_logged_in()){//make sure they are logged in and this is a post (not admin page etc.)
+
       $user_id = get_current_user_id();//get user ID
       $post_slug = $post->post_name;//check current page slug ****make plugin settings page???
-         if('my-sites' == $post_slug || is_front_page()){//if my-sites slug
+         //if('my-sites' == $post_slug || is_front_page()){//if my-sites slug
             if(isset($_COOKIE['reclaim_redirect_site_id'])){//if cookie set           
                $site_id = $_COOKIE['reclaim_redirect_site_id'];//get original site id from cookie
                $site_data = get_site($site_id);//get site info using ID
@@ -112,9 +112,9 @@ function reclaim_wpms_sso_cookie_action(){
 
             } //if no cookie, remain on my-sites page with list of sites
 
-         }
+        // }
 
-    }
+    } 
     
 }
 
@@ -171,21 +171,19 @@ function reclaim_wpms_sso_sort_sites_alpha($blogs){
 /**
  * WordPress function for redirecting users on root page login based on user role
  */
-add_filter( 'login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 3 );
 
-function reclaim_wpms_sso_login_redirect( $redirect_to, $request, $user ) {
-    global $user;
-    if ( isset( $user->roles ) && is_array( $user->roles ) ) {
-
-        // if ( $user->has_cap( 'administrator' ) ) {
+function reclaim_wpms_sso_login_redirect( $url, $request, $user ){
+    if( $user && is_object( $user ) && is_a( $user, 'WP_User' ) ) {
+        // if( $user->has_cap( 'administrator' ) ) {
         //     $url = admin_url();
         // } else {
-            $url = home_url( '/my-sites/' );
+            $url = home_url('/my-sites/');
         //}
     }
     return $url;
 }
 
+add_filter('login_redirect', 'reclaim_wpms_sso_login_redirect', 10, 3 );
 
 
 //LOGGER -- for logging var_dumps, variables, errors etc.
