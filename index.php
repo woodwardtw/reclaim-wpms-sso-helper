@@ -177,11 +177,11 @@ function reclaim_wpms_sso_sort_sites_alpha($blogs){
 
 function reclaim_wpms_sso_login_redirect( $url, $request, $user ){
     if( $user && is_object( $user ) && is_a( $user, 'WP_User' ) ) {
-        // if( $user->has_cap( 'administrator' ) ) {
-        //     $url = admin_url();
-        // } else {
-            $url = home_url('/my-sites/');
-        //}
+      
+      if(get_current_blog_id() === 1){//in case someone goes to login when logged in on another site
+         $url = home_url('/my-sites/');
+      }
+
     }
     return $url;
 }
