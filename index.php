@@ -105,7 +105,7 @@ function reclaim_wpms_sso_cookie_action(){
                $base_site_url = $site_data->domain . $site_data->path;//get base URL to site
                if(current_user_can_for_blog( $site_id, 'edit_posts' )){//if current user is contributor or higher
                   reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id');//delete cookie
-                  wp_redirect("https://". $base_site_url . 'wp-admin/');//send them to backend
+                  wp_redirect("https://". $base_site_url );//send them to backend **if you add . 'wp-admin/' back
                    exit;
                } else {//if just subscriber, send to front end site
                   reclaim_wpms_sso_delete_cookie('reclaim_redirect_site_id');
