@@ -45,7 +45,6 @@ function reclaim_wpms_sso_page_requested(){
 //do things if page is wp-login.php
 function reclaim_wpms_sso_check_login(){
    $url = reclaim_wpms_sso_page_requested();//what page did you try to go to?
-   //$root_login = 'https://dev.wordpress.kpu.ca/wp-login.php?saml_sso';
    $root_login = network_home_url() . 'wp-login.php';//this is the basic login page and includes https://  
    //******test against custom domains?????
    $site_id = get_current_blog_id();
@@ -54,7 +53,7 @@ function reclaim_wpms_sso_check_login(){
 
    if (is_user_logged_in() === false){//make sure you aren't already logged in
 
-         $plain_url = strtok($url, '?');//removes any query/redirect elements in the URL to make things simpler
+         $plain_url = $url;//strtok($url, '?');//removes any query/redirect elements in the URL to make things simpler
          if($plain_url != $root_login && is_login()){//your are NOT on the main root login page but you are on a login page
 
             reclaim_wpms_sso_cookie_maker($site_id);//set cookie with the URL of the site where you tried to login
